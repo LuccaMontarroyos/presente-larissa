@@ -115,7 +115,7 @@ export default function Home() {
             }}
             className="text-xs text-red-300 hover:text-red-500 underline cursor-pointer"
           >
-            [DEBUG] Resetar Progresso (Testar Quiz e Jogo)
+            Jogar os joguinhos novamente
           </button>
         </div>
       </footer>
