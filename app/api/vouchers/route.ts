@@ -41,7 +41,7 @@ export async function PUT(request: Request) {
 
     if (updatedVoucher.type === "ACTION") {
       try {
-        await resend.emails.send({
+        const { data, error } = await resend.emails.send({
           from: 'onboarding@resend.dev', // Pode deixar esse email padrão de testes do Resend
           to: MEU_EMAIL,
           subject: `❤️ ELA USOU UM VALE: ${updatedVoucher.title}`,
@@ -58,10 +58,18 @@ export async function PUT(request: Request) {
             </div>
           `
         });
+
+        if (error) {
+          console.error("❌ ERRO NO RESEND (Produção):", error);
+          // Opcional: retornar erro para o front saber também
+        } else {
+          console.log("✅ SUCESSO REAL! ID do Email:", data?.id);
+        }
+        
         console.log("E-mail enviado com sucesso!");
       } catch (emailError) {
         console.error("Erro ao enviar e-mail:", emailError);
-        
+
       }
     }
 

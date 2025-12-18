@@ -46,7 +46,7 @@ export default function VoucherSection() {
       setSelectedVoucher(null);
 
       if (type === "ACTION") {
-        alert("Pedido enviado para o Lucca! ❤️");
+        alert("Pedido enviado para Lucca! ❤️");
       }
     } catch (error) {
       alert("Erro ao processar.");
