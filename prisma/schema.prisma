@@ -1,0 +1,36 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL") // Necessário para Supabase em conexões serverless
+}
+
+// Enum para diferenciar se é um Cupom de ação ou apenas um Conselho
+enum VoucherType {
+  ACTION // Ex: Vale Massagem, Vale Jantar
+  ADVICE // Ex: Conselho para dia ruim
+}
+
+model Voucher {
+  id          String      @id @default(uuid())
+  title       String
+  description String      @db.Text
+  type        VoucherType
+  
+  // Controle de uso
+  isRedeemed  Boolean     @default(false)
+  redeemedAt  DateTime?   // Data de quando ela usou
+
+  // Controle administrativo (para você ocultar/mostrar sem deletar)
+  isActive    Boolean     @default(true) 
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("vouchers")
+}

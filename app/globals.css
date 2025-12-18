@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff;
@@ -23,4 +26,44 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+html, body {
+  scroll-behavior: smooth;
+}
+
+/* Classes utilitárias para o efeito 3D */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; /* Safari */
+}
+
+.bg-noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  opacity: 0.4; /* Ajuste a intensidade da textura aqui */
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Um gradiente de fundo fixo suave */
+.bg-gradient-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -2;
+  background: radial-gradient(circle at 50% 0%, #f5f3ff 0%, #fff 50%, #fff1f2 100%);
 }

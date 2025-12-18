@@ -1,65 +1,125 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
+import { motion } from "framer-motion";
+
+// --- IMPORTAÇÃO DOS COMPONENTES ---
+import LoveQuiz from "./components/LoveQuiz";
+import LoveMaze from "./components/LoveMaze"; // Importando o Jogo
+import VoucherSection from "./components/VoucherSection";
+import TripSection from "./components/TripSection";
+import LetterSection from "./components/LetterSection";
+import MomentsSection from "./components/MomentsSection";
+import MusicPlayer from "./components/MusicPlayer";
+import DateInviteSection from "./components/DateInviteSection";
+
+// --- DEFINIÇÃO DAS FASES ---
+const STAGE_QUIZ = 0;
+const STAGE_GAME = 1;
+const STAGE_SITE = 2;
 
 export default function Home() {
+  // Estado inicial: Começa no Quiz (0)
+  const [currentStage, setCurrentStage] = useState(STAGE_QUIZ);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Efeito para carregar onde parou (evita ter que responder tudo de novo ao dar F5)
+  useEffect(() => {
+    const savedStage = localStorage.getItem("love_stage_progress");
+    const oldAuth = localStorage.getItem("love_access_granted"); // Compatibilidade com versão antiga
+
+    if (savedStage) {
+      setCurrentStage(parseInt(savedStage));
+    } else if (oldAuth === "true") {
+      // Se já tinha acesso na versão antiga, joga direto pro site
+      setCurrentStage(STAGE_SITE);
+    }
+
+    setIsLoading(false);
+  }, []);
+
+  // Função para avançar de nível
+  const advanceStage = (newStage: number) => {
+    setCurrentStage(newStage);
+    localStorage.setItem("love_stage_progress", newStage.toString());
+  };
+
+  // Previne "flicker" (piscar) enquanto carrega o localStorage
+  if (isLoading) return null;
+
+  // --- RENDERIZAÇÃO CONDICIONAL ---
+
+  // 1. Se estiver na fase 0 -> Mostra o Quiz
+  if (currentStage === STAGE_QUIZ) {
+    return <LoveQuiz onSuccess={() => advanceStage(STAGE_GAME)} />;
+  }
+
+  // 2. Se estiver na fase 1 -> Mostra o Labirinto
+  if (currentStage === STAGE_GAME) {
+    return <LoveMaze onGameWin={() => advanceStage(STAGE_SITE)} />;
+  }
+
+  // 3. Se estiver na fase 2 -> Mostra o Site Principal
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen selection:bg-violet-200 text-slate-800">
+
+      <MusicPlayer />
+
+      <section className="h-[100dvh] flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.3 }}
+          className="z-10 max-w-2xl"
+        >
+          <h1 className="text-4xl md:text-6xl font-bold text-violet-800 mb-4 font-serif">
+            Bem-vinda, meu pinguinho ❤️🐼
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-xl md:text-2xl text-slate-600 font-light">
+            Criei esse cantinho para guardar um pouco da nossa história, te oferecer alguns mimos, te dizer o quanto eu te amo e te quero pra sempre na minha vida e mostrar nossos próximos planos...
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+          className="absolute bottom-20 text-violet-400"
+        >
+          Role para descobrir ↓
+        </motion.div>
+      </section>
+
+      <LetterSection />
+
+      <VoucherSection />
+
+      <MomentsSection />
+
+      <DateInviteSection />
+
+      <TripSection />
+
+      <footer className="py-10 text-center text-slate-400 text-sm">
+        Feito com todo amor do mundo pelo seu desenvolvedor 👩🏻‍💻🫶🏻. <br />
+        © {new Date().getFullYear()} Lucca & Larissa
+
+        {/* BOTÃO DE RESET (Útil para você testar o fluxo do zero) */}
+        <div className="mt-6">
+          <button
+            onClick={() => {
+              localStorage.removeItem("love_stage_progress");
+              localStorage.removeItem("love_access_granted"); // Remove o antigo também
+              window.location.reload();
+            }}
+            className="text-xs text-red-300 hover:text-red-500 underline cursor-pointer"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            [DEBUG] Resetar Progresso (Testar Quiz e Jogo)
+          </button>
         </div>
-      </main>
-    </div>
+      </footer>
+
+    </main>
   );
 }
