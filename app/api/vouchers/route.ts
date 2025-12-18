@@ -44,13 +44,13 @@ export async function PUT(request: Request) {
         const { data, error } = await resend.emails.send({
           from: 'onboarding@resend.dev', // Pode deixar esse email padrão de testes do Resend
           to: MEU_EMAIL,
-          subject: `❤️ ELA USOU UM VALE: ${updatedVoucher.title}`,
+          subject: `Larissa utilizou um vale: ${updatedVoucher.title}`,
           html: `
             <div style="font-family: sans-serif; color: #333;">
               <h1>Opa, corre aqui! 🏃‍♂️</h1>
               <p>A Larissa acabou de resgatar um vale no site.</p>
               <hr />
-              <h3>🎁 Vale: ${updatedVoucher.title}</h3>
+              <h3>Vale: ${updatedVoucher.title}</h3>
               <p><strong>Descrição:</strong> ${updatedVoucher.description}</p>
               <p><strong>Data:</strong> ${new Date().toLocaleString('pt-BR')}</p>
               <hr />
@@ -65,7 +65,7 @@ export async function PUT(request: Request) {
         } else {
           console.log("✅ SUCESSO REAL! ID do Email:", data?.id);
         }
-        
+
         console.log("E-mail enviado com sucesso!");
       } catch (emailError) {
         console.error("Erro ao enviar e-mail:", emailError);
